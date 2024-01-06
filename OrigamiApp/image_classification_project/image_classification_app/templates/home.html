@@ -1,0 +1,59 @@
+<!-- image_classification_app/templates/home.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Classification</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Image Classification</h1>
+
+    <video id="video" width="640" height="480" autoplay></video>
+    <button id="captureButton">Capture Image</button>
+    <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" name="upload">Upload and Classify</button>
+    </form>
+
+    {% if form.is_bound and form.is_valid %}
+        <p id="predictedClass">Predicted Class: </p>
+    {% endif %}
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('captureButton');
+
+        // Access webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                video.srcObject = stream;
+            })
+            .catch((err) => {
+                console.error('Error accessing webcam: ', err);
+            });
+
+        // Capture image from webcam
+        captureButton.addEventListener('click', () => {
+            context.drawImage(video, 0, 0, 640, 480);
+            const imageData = canvas.toDataURL('image/jpeg');
+            $.ajax({
+                type: "POST",
+                url: '{% url "home" %}',
+                data: { image_data: imageData, csrfmiddlewaretoken: '{{ csrf_token }}', capture: true },
+                success: function(response) {
+                    alert('Image captured successfully!');
+                    // Update the predicted class on the page
+                    $('#predictedClass').text('Predicted Class: ' + response.predicted_class);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

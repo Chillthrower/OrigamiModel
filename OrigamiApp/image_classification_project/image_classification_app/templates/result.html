@@ -1,0 +1,20 @@
+<!-- image_classification_app/templates/result.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Classification Result</title>
+</head>
+<body>
+    <h1>Image Classification Result</h1>
+
+    {% if predicted_class %}
+        <p>Predicted Class: {{ predicted_class }}</p>
+        <p>Check out this YouTube video for an origami tutorial:</p>
+        <a href="https://www.youtube.com/results?search_query={{ predicted_class }}+origami+tutorial" target="_blank">YouTube Origami Tutorial</a>
+    {% else %}
+        <p>No predicted class available</p>
+    {% endif %}
+</body>
+</html>
