@@ -1,5 +1,3 @@
-# image_classification_app/views.py
-
 from django.shortcuts import render, redirect
 from .forms import UploadImageForm
 from keras.models import load_model
@@ -10,12 +8,9 @@ import os
 import pandas as pd
 import base64
 
-# Load the trained model
-loaded_model = load_model('image_classification_app/ImageClassify.h5')  # Replace with the actual path
+loaded_model = load_model('image_classification_app/ImageClassify.h5')
 
-# Load the DataFrame
 def load_dataframe():
-    # Define the path to your images folder
     images_folder = "D:/IMAGECLASSIFICATIONTEST/DATA"
     input_path = []
     label = []
@@ -28,9 +23,8 @@ def load_dataframe():
 
     return pd.DataFrame({'images': input_path, 'label': label})
 
-df = load_dataframe()  # Load the DataFrame
+df = load_dataframe()
 
-# Classify image function
 def classify_image(image_path):
     print(f"Attempting to classify image: {image_path}")
     if not os.path.exists(image_path):
@@ -46,16 +40,14 @@ def classify_image(image_path):
     print("Predicted class:", predicted_class)
     return predicted_class
 
-# Preprocess input image function
 def preprocess_input_image(image_path):
     img = Image.open(image_path).convert('RGB')
     img = img.resize((128, 128))
     img_array = img_to_array(img)
     img_array = img_array.reshape((1, 128, 128, 3))
-    img_array = img_array / 255.0  # Normalize the pixel values
+    img_array = img_array / 255.0
     return img_array
 
-# Home view function
 def home(request):
     predicted_class = None
 
@@ -76,7 +68,6 @@ def home(request):
                 predicted_class = instance.predicted_class
                 print("Predicted Class (inside view):", predicted_class)
                 print("Image uploaded and classified successfully!")
-                # Redirect to the result page with the predicted class
                 return render(request, 'result.html', {'predicted_class': predicted_class})
             else:
                 print("Form is not valid. Form errors:", form.errors)
